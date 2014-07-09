@@ -81,7 +81,7 @@
 	<script src="jquery-1.11.0.min.js"></script>
 	<script src="mustache.js"></script>
 	<script id="template" type="x-tmpl-mustache">
-	<li data-id="{{ uid }}">
+	<li id="{{ uid }}">
 		<span class='icon'> {{ &icon }} </span>
 		<span class='message'> {{ message }} </span>
 		<span class='timestamp'>Last updated: {{ time }} </span>
@@ -101,20 +101,31 @@
 		</footer>
 	</div>
 	<script type="text/javascript">
+	function updateCheck(uid) {
+		$.getJSON( "data/" + uid, function( statdata ) {
+			if(typeof statdata['icon'] != 'undefined') {
+				var template = $('#template').html();
+				statdata['message'] = statdata['message'].replace(/(<([^>]+)>)/ig,"");
+				var rendered = Mustache.render(template, statdata);
+				if ($("#" + statdata['uid']).length != 0) {
+					$("#" + statdata['uid']).html(rendered);
+				} else {
+					$(rendered).appendTo('#data');
+				}
+			}
+		});
+	}
+
+
 	$.getJSON( "data/index.json", function( data ) {
 		console.log(data);
 		$.each( data, function( i, item ) {
-			$.getJSON( "data/" + item, function( statdata ) {
-				if(typeof statdata['icon'] != 'undefined') {
-					var template = $('#template').html();
-					statdata['message'] = statdata['message'].replace(/(<([^>]+)>)/ig,"");
-					var rendered = Mustache.render(template, statdata);
-					$(rendered).appendTo('#data');
-				}
-			});
+			// updateCheck(item);
+			window.setInterval(function() {
+		          updateCheck(item);
+		    }, 30000);
 		});
 	});
-
 
 	</script>
 </body>
