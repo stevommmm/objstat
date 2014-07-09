@@ -40,13 +40,13 @@
 			list-style: none;
 			padding: 0;
 		}
-		ul#data li  {
+		ul#data > li  {
 			border-bottom: 1px solid #aaa;
 		}
-		ul#data li:last-child {
+		ul#data > li:last-child {
 			border-bottom: none;
 		}
-		ul#data li {
+		ul#data > li {
 			padding: 4px;
 			position: relative;
 			min-height: 30px;
@@ -63,20 +63,35 @@
 			display: none;
 			color: #aaa;
 		}
-		.loader {
-			position: absolute;
-			right: 10px;
-            top: 4px;
-			line-height: 30px;
-			color: #caa;
-            font-size: 24px;
-		}
-		ul#data li:hover span.message {
+		ul#data > li:hover > span.message {
 			display: none;
 		}
-		ul#data li:hover span.timestamp {
+		ul#data > li:hover > span.timestamp {
 			display: inline-block;
 		}
+		ul#data > li > ul {
+			display: none;
+			width: 100%;
+			list-style: none;
+			padding: 0;
+		}
+		ul#data > li:hover > ul {
+			display: block;
+		}
+		ul#data > li > ul > li {
+			padding: 2px 4px;
+			background-color: #f8f8f8;
+			border: 1px solid #ddd;
+			border-bottom: none;
+		}
+		ul#data > li > ul > li:last-child {
+			border-bottom: 1px solid #ddd;
+		}
+		ul#data > li > ul > li > span {
+			float: right;
+		}
+
+
 		footer {
 			float: right;
 			font-size: small;
@@ -91,11 +106,14 @@
 	<script src="mustache.js"></script>
 	<script id="template" type="x-tmpl-mustache">
 		<li id="{{ uid }}">
-			<span class='icon'> {{ &icon }} </span>
+			<span class='icon'>&orarr;</span>
 			<span class='message'> {{ message }} </span>
 			<span class='timestamp'>Last updated: {{ time }} </span>
-			<div data-array="{{ history }}"></div>
-			<div class="loader">&ocir;</div>
+			<ul class="history">
+			{{#history}}
+			<li>{{ &. }}</li>
+			{{/history}}
+			</ul>
 		</li>
 	</script>
 </head>
@@ -123,15 +141,11 @@
 						$(rendered).appendTo('#data');
 					}
 					setTimeout(function() {
-						$("#" + statdata['uid']).find('.loader').hide(); 
+						$("#" + statdata['uid']).find('.icon').html(statdata['icon']); 
 					}, 5000);
 				}
 			});
 		}
-		function hideRefresh(uid) {
-
-		}
-
 
 		$.getJSON( "data/index.json", function( data ) {
 			console.log(data);

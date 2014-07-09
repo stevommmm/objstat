@@ -10,19 +10,20 @@ class result(object):
 	def __init__(self, uid, success, message, history=None):
 		self.uid = uid
 		self.read()
+
+		if not hasattr(self, 'history'):
+			self.history = []
+		else:
+			if history:
+				self.history.insert(0, self.message + '<span>' + self.time + '</span>')
+				self.history = self.history[:20]
+
 		# Overwrite populated values
 		self.success = success
 		self.message = message
 		self.icon = self._marker()
 		self.time = time.ctime()
 
-		if not hasattr(self, 'history'):
-			self.history = []
-
-		if history:
-			self.history.insert(0, history)
-			self.history = self.history[:20]
-		
 	def _marker(self):
 		markers = {
 			True: '&#10004;',
