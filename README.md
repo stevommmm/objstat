@@ -2,6 +2,8 @@ ObjStat
 =======
 Simple status reporting websites
 
+![Screenshot](screenshot.png)
+
 Running from the command line
 -----------------------------
 
