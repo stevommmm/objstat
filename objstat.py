@@ -129,6 +129,44 @@ class checks(object):
 		except socket.gaierror:
 			return dict(success=False, message='HTTPS request failed to resolve %s' % host)
 
+	@staticmethod
+	def check_irc(host, port=6667):
+		import socket
+		import time
+		import random
+
+		nick = 'objstat_' + ''.join(map(chr, [random.randrange(97, 122) for x in list(range(5))]))
+
+		result = dict(success=False, message='Failed to connect to %s' % host)
+
+		try:
+			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+			s.connect((host, port))
+
+			s.send('NICK %s\r\n' % nick)
+			s.send('USER %s * * :Monitoring bot\r\n' % nick)
+
+			time.sleep(5)
+
+			data = s.recv(300)
+
+			if 'NOTICE' in data:
+				result['success'] = True
+				result['message'] = 'Successfully connected to %s' % host
+			else:
+				result['message'] = 'Failed to complete handshake with %s' % host
+
+			time.sleep(10)
+
+			s.send('QUIT :Done monitoring')
+			s.shutdown(1)
+			s.close()
+		except socket.gaierror:
+			return dict(success=False, message='Failed to resolve %s' % host)
+		finally:
+			return result
+
 
 def group(lst, n):
 	for i in range(0, len(lst), n):
@@ -144,5 +182,9 @@ if __name__ == '__main__':
 	check(**dict(group(sys.argv[1:], 2))).run()
 
 	# Index our data
-	with open(os.path.join('data', 'index.json'), 'w+') as ouf:
-		json.dump(os.listdir('data'), ouf)
+	mydir = os.path.dirname(__file__)
+	with open(os.path.join(mydir, 'data', 'index.json'), 'w+') as ouf:
+		i = []
+		for f in os.listdir(os.path.join(mydir, 'data')):
+			i.append(os.path.split(f)[-1])
+		json.dump(i, ouf)
