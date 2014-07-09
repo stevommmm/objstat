@@ -9,9 +9,9 @@ Running from the command line
 
 Running objstat requires some knowledge of the checks written. 
 
-Command line arguements are parsed directly into the checks themselves,
+Command line arguments are parsed directly into the checks themselves,
 the _func_ parameter tells objstat which check to make use of, 3 checks are available
-by default, *check_nfs*, *check_http* and *check_https*. All arguements after this initial
+by default, *check_nfs*, *check_http* and *check_https*. All arguments after this initial
 check specification are parsed as kwargs into the check function itself
 
     @staticmethod
