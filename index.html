@@ -1,92 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
-    <title>ObjStat</title>
-    <style type="text/css">
-	html {
-	    height: 100%;
-	    -webkit-font-smoothing: antialiased;
-	}
-	body {
-	    font-family: 'Helvetica Neue', 'Roboto', sans-serif;
-	    color: #888;
-	    font-weight: 400;
-	    font-size: 16px;
-	    line-height: 1.6em;
-	    background-image: -webkit-linear-gradient(130deg, #66717F, #bad1b9);
-	    background-image: -o-linear-gradient(40deg, #66717F, #bad1b9);
-	    background-image: linear-gradient(40deg, #655, #caa);
-	    margin: 0;
-	    min-height: 100%;
-	}
-	.wrapper {
-	    display: block;
-	    max-width: 640px;
-	    padding: 5% 5% 0 5%;
-	    margin: 0 auto;
-	    height: 100%;
-	}
-	.wrapper > h2 {
-		color: #eee;
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+	<title>ObjStat</title>
+	<style type="text/css">
+		html {
+			height: 100%;
+			-webkit-font-smoothing: antialiased;
+		}
+		body {
+			font-family: 'Helvetica Neue', 'Roboto', sans-serif;
+			color: #888;
+			font-weight: 400;
+			font-size: 16px;
+			line-height: 1.6em;
+			background-image: -webkit-linear-gradient(130deg, #66717F, #bad1b9);
+			background-image: -o-linear-gradient(40deg, #66717F, #bad1b9);
+			background-image: linear-gradient(40deg, #655, #caa);
+			margin: 0;
+			min-height: 100%;
+		}
+		.wrapper {
+			display: block;
+			max-width: 640px;
+			padding: 5% 5% 0 5%;
+			margin: 0 auto;
+			height: 100%;
+		}
+		.wrapper > h2 {
+			color: #eee;
 
-	}
-	ul#data {
-		background-color: #fff;
-	    box-shadow: #555 0px 5px 29px -5px;
-	    border-radius: 3px;
-	    width: 100%;
-	    list-style: none;
-	    padding: 0;
-	}
-	ul#data li  {
-		border-bottom: 1px solid #aaa;
-	}
-	ul#data li:last-child {
-		border-bottom: none;
-	}
-	ul#data li {
-		padding: 4px;
-		position: relative;
-	}
-	span.icon {
-		font-family: "Arial Unicode MS, Lucida Grande";
-		color: #444;
-		font-weight: bold;
-		padding: 4px 10px;
-		font-size: 24px;
-		display: inline-block;
-	}
-	span.timestamp {
-		display: none;
-		color: #aaa;
-	}
-	ul#data li:hover span.message {
-		display: none;
-	}
-	ul#data li:hover span.timestamp {
-		display: inline-block;
-	}
-	footer {
-		float: right;
-		font-size: small;
-		color: #fff;
-	}
-	footer a, footer a:visited {
-		color: #eee;
-		text-decoration: none;
-	}
+		}
+		ul#data {
+			background-color: #fff;
+			box-shadow: #555 0px 5px 29px -5px;
+			border-radius: 3px;
+			width: 100%;
+			list-style: none;
+			padding: 0;
+		}
+		ul#data li  {
+			border-bottom: 1px solid #aaa;
+		}
+		ul#data li:last-child {
+			border-bottom: none;
+		}
+		ul#data li {
+			padding: 4px;
+			position: relative;
+			min-height: 30px;
+		}
+		span.icon {
+			font-family: "Arial Unicode MS, Lucida Grande";
+			color: #444;
+			font-weight: bold;
+			padding: 4px 10px;
+			font-size: 24px;
+			display: inline-block;
+		}
+		span.timestamp {
+			display: none;
+			color: #aaa;
+		}
+		.loader {
+			position: absolute;
+			right: 10px;
+            top: 4px;
+			line-height: 30px;
+			color: #caa;
+            font-size: 24px;
+		}
+		ul#data li:hover span.message {
+			display: none;
+		}
+		ul#data li:hover span.timestamp {
+			display: inline-block;
+		}
+		footer {
+			float: right;
+			font-size: small;
+			color: #fff;
+		}
+		footer a, footer a:visited {
+			color: #eee;
+			text-decoration: none;
+		}
 	</style>
 	<script src="jquery-1.11.0.min.js"></script>
 	<script src="mustache.js"></script>
 	<script id="template" type="x-tmpl-mustache">
-	<li id="{{ uid }}">
-		<span class='icon'> {{ &icon }} </span>
-		<span class='message'> {{ message }} </span>
-		<span class='timestamp'>Last updated: {{ time }} </span>
-		<div data-array="{{ history }}"></div>
-	</li>
+		<li id="{{ uid }}">
+			<span class='icon'> {{ &icon }} </span>
+			<span class='message'> {{ message }} </span>
+			<span class='timestamp'>Last updated: {{ time }} </span>
+			<div data-array="{{ history }}"></div>
+			<div class="loader">&ocir;</div>
+		</li>
 	</script>
 </head>
 <body>
@@ -101,31 +111,37 @@
 		</footer>
 	</div>
 	<script type="text/javascript">
-	function updateCheck(uid) {
-		$.getJSON( "data/" + uid, function( statdata ) {
-			if(typeof statdata['icon'] != 'undefined') {
-				var template = $('#template').html();
-				statdata['message'] = statdata['message'].replace(/(<([^>]+)>)/ig,"");
-				var rendered = Mustache.render(template, statdata);
-				if ($("#" + statdata['uid']).length != 0) {
-					$("#" + statdata['uid']).html(rendered);
-				} else {
-					$(rendered).appendTo('#data');
+		function updateCheck(uid) {
+			$.getJSON( "data/" + uid, function( statdata ) {
+				if(typeof statdata['icon'] != 'undefined') {
+					var template = $('#template').html();
+					statdata['message'] = statdata['message'].replace(/(<([^>]+)>)/ig,"");
+					var rendered = Mustache.render(template, statdata);
+					if ($("#" + statdata['uid']).length != 0) {
+						$("#" + statdata['uid'])[0].outerHTML = rendered;
+					} else {
+						$(rendered).appendTo('#data');
+					}
+					setTimeout(function() {
+						$("#" + statdata['uid']).find('.loader').hide(); 
+					}, 5000);
 				}
-			}
-		});
-	}
+			});
+		}
+		function hideRefresh(uid) {
+
+		}
 
 
-	$.getJSON( "data/index.json", function( data ) {
-		console.log(data);
-		$.each( data, function( i, item ) {
-			// updateCheck(item);
-			window.setInterval(function() {
-		          updateCheck(item);
-		    }, 30000);
+		$.getJSON( "data/index.json", function( data ) {
+			console.log(data);
+			$.each( data, function( i, item ) {
+				updateCheck(item);
+				window.setInterval(function() {
+					updateCheck(item);
+				}, 30000 + Math.floor((Math.random() * 10) * 1000));
+			});
 		});
-	});
 
 	</script>
 </body>
