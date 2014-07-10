@@ -50,6 +50,7 @@
 			padding: 4px;
 			position: relative;
 			min-height: 30px;
+			cursor: pointer;
 		}
 		span.icon {
 			font-family: "Arial Unicode MS, Lucida Grande";
@@ -74,9 +75,6 @@
 			width: 100%;
 			list-style: none;
 			padding: 0;
-		}
-		ul#data > li:hover > ul {
-			display: block;
 		}
 		ul#data > li > ul > li {
 			padding: 2px 4px;
@@ -105,7 +103,7 @@
 	<script src="jquery-1.11.0.min.js"></script>
 	<script src="mustache.js"></script>
 	<script id="template" type="x-tmpl-mustache">
-		<li id="{{ uid }}">
+		<li id="{{ uid }}" onclick="toggleHistory(this)">
 			<span class='icon'>&orarr;</span>
 			<span class='message'> {{ message }} </span>
 			<span class='timestamp'>Last updated: {{ time }} </span>
@@ -129,6 +127,8 @@
 		</footer>
 	</div>
 	<script type="text/javascript">
+		$.ajaxSetup({ cache: false });
+
 		function updateCheck(uid) {
 			$.getJSON( "data/" + uid, function( statdata ) {
 				if(typeof statdata['icon'] != 'undefined') {
@@ -145,6 +145,10 @@
 					}, 5000);
 				}
 			});
+		}
+
+		function toggleHistory(e) {
+			$(e).find('.history').toggle();
 		}
 
 		$.getJSON( "data/index.json", function( data ) {

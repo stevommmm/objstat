@@ -7,7 +7,7 @@ import os
 import time
 
 class result(object):
-	def __init__(self, uid, success, message, history=None):
+	def __init__(self, uid, success, message, history=True):
 		self.uid = uid
 		self.read()
 
@@ -108,7 +108,7 @@ class checks(object):
 			data = res.read()
 
 			if data and res.status == 200:
-				return dict(success=True, message='HTTP request to %s: OK' % host, history=len(data))
+				return dict(success=True, message='HTTP request to %s: OK' % host)
 			return dict(success=False, message='HTTP error for %s: %s' % (host, res.reason))
 		except socket.gaierror:
 			return dict(success=False, message='HTTP request failed to resolve %s' % host)
@@ -125,7 +125,7 @@ class checks(object):
 			data = res.read()
 
 			if data and res.status == 200:
-				return dict(success=True, message='HTTPS request to %s: OK' % host, history=len(data))
+				return dict(success=True, message='HTTPS request to %s: OK' % host)
 			return dict(success=False, message='HTTPS error for %s: %s' % (host, res.reason))
 		except socket.gaierror:
 			return dict(success=False, message='HTTPS request failed to resolve %s' % host)
@@ -154,9 +154,9 @@ class checks(object):
 
 			if 'NOTICE' in data:
 				result['success'] = True
-				result['message'] = 'Successfully connected to %s' % host
+				result['message'] = 'IRC services running at %s' % host
 			else:
-				result['message'] = 'Failed to complete handshake with %s' % host
+				result['message'] = 'Failed to complete irc handshake with %s' % host
 
 			time.sleep(10)
 
@@ -164,7 +164,7 @@ class checks(object):
 			s.shutdown(1)
 			s.close()
 		except socket.gaierror:
-			return dict(success=False, message='Failed to resolve %s' % host)
+			return dict(success=False, message='Failed to resolve irc server: %s' % host)
 		finally:
 			return result
 
