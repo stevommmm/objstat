@@ -8,9 +8,8 @@ Simple status reporting websites
 Creating checks
 ---------------
 
-Each check comes in the form of a static python function in the checks class
+Each check comes in the form of a python function in the checks folder, the filename may be arbitrary 
 
-    @staticmethod
     def check_https(host):
         ...
 
@@ -19,6 +18,8 @@ Each check must also return a dictionary, containing the keys *success* and *mes
 A check may optionally return a *history=False* in order to turn off the default history recording
 
     return dict(success=True, message='My check properly returns data!', history=False)
+
+*All function names starting with __ are ignored*
 
 
 Running from the command line
@@ -43,5 +44,5 @@ Configuring crontab
 -------------------
 Crontab can be used to automatically run checks.
 
-	*/30 * * * * objstat.py func check_http host www.reddit.com
+    */30 * * * * objstat.py func check_http host www.reddit.com
 	*/15 * * * * objstat.py func check_https host twitter.com

@@ -1,0 +1,1 @@
+Location of check data, indexed and used by index.html to show checks
